@@ -1,10 +1,15 @@
 cmake_minimum_required(VERSION 3.6)
-project(omnidirectional)
+project(OmnidirectionalCamera)
 
 set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+find_package(Qt5Widgets)
 
 find_package(OpenCV REQUIRED)
 
 set(SOURCE_FILES main.cpp ocam_functions.cpp)
-add_executable(omnidirectional ${SOURCE_FILES})
-target_link_libraries(omnidirectional ${OpenCV_LIBS})
+add_executable(OmnidirectionalCamera ${SOURCE_FILES})
+target_link_libraries(OmnidirectionalCamera Qt5::Widgets)
+target_link_libraries(OmnidirectionalCamera ${OpenCV_LIBS})
