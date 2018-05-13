@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <algorithm>
 
 #include <opencv2/imgcodecs.hpp>
 #include <cv.hpp>
@@ -10,51 +11,39 @@ using namespace cv;
 
 IplImage *getCenter(const char *fileName) {
 
-    Mat grey, binary, image;
+    Mat image;
     image = imread(fileName);
+    Mat greyscale;
+    cvtColor(image, greyscale, CV_BGR2GRAY);
+    Mat binary;
+    threshold(greyscale, binary, 70, 255, CV_THRESH_BINARY);
 
-    // 转为灰度图
-    cvtColor(image, grey, CV_BGR2GRAY);
-
-    threshold(grey, binary, 70, 255, CV_THRESH_BINARY);
-
-    vector<vector<cv::Point>> contours;
+    vector<vector<Point>> contours;
     findContours(binary, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-
-    double maxArea = 0;
-    vector<cv::Point> maxContour;
-    for (size_t i = 0; i < contours.size(); i++)
-    {
-        double area = cv::contourArea(contours[i]);
-        if (area > maxArea)
-        {
-            maxArea = area;
-            maxContour = contours[i];
-        }
-    }
-
+    vector<double> areas(contours.size());
+    transform(contours.begin(), contours.end(), areas.begin(),
+              [](const vector<Point> &contour) { return contourArea(contour); });
+    size_t maxIndex = static_cast<size_t>(max_element(areas.begin(), areas.end()) - areas.begin());
+    const vector<Point> &maxContour = contours[maxIndex];
     Point2f center;
     float radius;
     minEnclosingCircle(maxContour, center, radius);
 
-    IplImage* dst = new IplImage(image);
-
+    IplImage* src = new IplImage(image);
     CvSize size_pan_image = cvSize(1200, 400);        // size of the undistorted panoramic video
-    IplImage *dst_pan = cvCreateImage(size_pan_image, 8, 3);    // undistorted panoramic video
+    IplImage *dst = cvCreateImage(size_pan_image, 8, 3);    // undistorted panoramic video
 
-    CvMat *mapx_pan = cvCreateMat(dst_pan->height, dst_pan->width, CV_32FC1);
-    CvMat *mapy_pan = cvCreateMat(dst_pan->height, dst_pan->width, CV_32FC1);
+    CvMat *mapx_pan = cvCreateMat(dst->height, dst->width, CV_32FC1);
+    CvMat *mapy_pan = cvCreateMat(dst->height, dst->width, CV_32FC1);
 
     float Rmax = radius;  // the maximum radius of the region you would like to undistort into a panorama
     float Rmin = 120;   // the minimum radius of the region you would like to undistort into a panorama
 
     create_panoramic_undistortion_LUT(mapx_pan, mapy_pan, Rmin, Rmax, center.x, center.y);//进行展开
 
-    cvRemap(dst, dst_pan, mapx_pan, mapy_pan, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS, cvScalarAll(0));
+    cvRemap(src, dst, mapx_pan, mapy_pan);
 
-    cvFlip(dst_pan);
-
-    return dst_pan;
+    return dst;
 }
 
 //IplImage *processFile(const char* fileName) {
