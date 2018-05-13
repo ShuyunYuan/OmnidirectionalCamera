@@ -4,16 +4,15 @@
 
 using namespace cv;
 
-//生成全景环带的展开图
-void create_panoramic_undistortion_LUT(Mat mapx, Mat mapy, float rMin, float rMax, float centerX, float centerY) {
-    int columns = mapx.cols;
-    int rows = mapx.rows;
+void create_panoramic_undistortion_LUT(Mat mapX, Mat mapY, float rMin, float rMax, float centerX, float centerY) {
+    int columns = mapX.cols;
+    int rows = mapX.rows;
     for (int row = 0; row < rows; ++row) {
         for (int column = 0; column < columns; ++column) {
-            float theta = ((float) column) / columns * 2 * M_PI;
             float rho = rMin + (rMax - rMin) / rows * row;
-            mapx.at<float>(row, column) = centerX + rho * cos(theta);
-            mapy.at<float>(row, column) = centerY + rho * sin(theta);
+            float theta = -static_cast<float>(column) / columns * 2 * static_cast<float>(M_PI);
+            mapX.at<float>(row, column) = centerX + rho * cos(theta);
+            mapY.at<float>(row, column) = centerY + rho * sin(theta);
         }
     }
 }

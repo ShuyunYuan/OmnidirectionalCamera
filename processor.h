@@ -3,6 +3,6 @@
 
 #include <cv.hpp>
 
-cv::Mat getCenter(const char* fileName);
+cv::Mat undistortPanorama(const char *fileName);
 
 #endif //OC_PROCESSOR_H
