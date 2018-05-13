@@ -15,12 +15,13 @@ void create_panoramic_undistortion_LUT(CvMat *mapx, CvMat *mapy, float Rmin, flo
     float *data_mapy = mapy->data.fl;
     float rho;
 
-    for (i = 0; i < height; i++)
+    for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
             // Note, if you would like to flip the image, just inverte the sign of theta
-            theta = -((float) j) / width * 2 *M_PI;
+            theta = -((float) j) / width * 2 * M_PI;
             rho = Rmax - (Rmax - Rmin) / height * i;
-            *(data_mapx + i * width + j) = yc + rho * sin(theta);
-            *(data_mapy + i * width + j) = xc + rho * cos(theta);
+            *(data_mapx + i * width + j) = xc + rho * sin(theta);
+            *(data_mapy + i * width + j) = yc + rho * cos(theta);
         }
+    }
 }
