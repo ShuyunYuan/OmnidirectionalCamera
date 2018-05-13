@@ -19,7 +19,6 @@ IplImage *getCenter(const char *fileName) {
     threshold(grey, binary, 70, 255, CV_THRESH_BINARY);
 
     vector<vector<cv::Point>> contours;
-
     findContours(binary, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 
     double maxArea = 0;
@@ -34,11 +33,11 @@ IplImage *getCenter(const char *fileName) {
         }
     }
 
-    Point2f center; float radius;
+    Point2f center;
+    float radius;
     minEnclosingCircle(maxContour, center, radius);
 
-    IplImage* dst = NULL;
-    dst = new IplImage(image);
+    IplImage* dst = new IplImage(image);
 
     CvSize size_pan_image = cvSize(1200, 400);        // size of the undistorted panoramic video
     IplImage *dst_pan = cvCreateImage(size_pan_image, 8, 3);    // undistorted panoramic video
@@ -49,7 +48,7 @@ IplImage *getCenter(const char *fileName) {
     float Rmax = radius;  // the maximum radius of the region you would like to undistort into a panorama
     float Rmin = 120;   // the minimum radius of the region you would like to undistort into a panorama
 
-    create_panoramic_undistortion_LUT(mapx_pan, mapy_pan, Rmin, Rmax, center.y, center.x);//进行展开
+    create_panoramic_undistortion_LUT(mapx_pan, mapy_pan, Rmin, Rmax, center.x, center.y);//进行展开
 
     cvRemap(dst, dst_pan, mapx_pan, mapy_pan, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS, cvScalarAll(0));
 
