@@ -17,36 +17,31 @@ Viewer::~Viewer() {
 }
 
 void Viewer::on_openButton_clicked() {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(),
+    fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QString(),
             tr("Image Files (*.bmp *.jpeg *.jpg *.png)"));
 
     if (fileName.isEmpty()) {
         return;
     }
-    QPixmap input;
-    input.load(fileName);
-    ui->inputImage->setPixmap(input);
-    IplImage *iplImage = processFile(fileName.toLocal8Bit().constData());
+    QPixmap inputPixmap;
+    inputPixmap.load(fileName);
+    ui->inputImage->setPixmap(inputPixmap.scaled(600, 600, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    IplImage *iplImage = getCenter(fileName.toLocal8Bit().constData());
     cv::Mat matrix = cv::cvarrToMat(iplImage);
-    cvReleaseImage(&iplImage);
     cv::cvtColor(matrix, matrix, matrix.type() == CV_8UC1 ? CV_GRAY2RGB : CV_BGR2RGB);
-    QPixmap output = QPixmap::fromImage(QImage(matrix.data, matrix.cols, matrix.rows, matrix.cols * 3,
+    outputPixmap = QPixmap::fromImage(QImage(matrix.data, matrix.cols, matrix.rows, matrix.cols * 3,
             QImage::Format_RGB888));
-    ui->outputImage->setPixmap(output);
+    cvReleaseImage(&iplImage);
+    ui->outputImage->setPixmap(outputPixmap.scaled(600, 600, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 void Viewer::on_saveButton_clicked() {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), QString(),
-            tr("Text Files (*.txt);;C++ Files (*.cpp *.h)"));
-    if (!fileName.isEmpty()) {
-        QFile file(fileName);
-        if (!file.open(QIODevice::WriteOnly)) {
-            // error message
-        } else {
-            QTextStream stream(&file);
-            //stream << ui->textEdit->toPlainText();
-            stream.flush();
-            file.close();
-        }
+    QFileInfo fileInfo(fileName);
+    QString saveFileName = QDir(fileInfo.path()).filePath("undistorted_" +
+            fileInfo.fileName().remove(QRegExp("^test_")));
+    saveFileName = QFileDialog::getSaveFileName(this, tr("Save File"), saveFileName,
+            tr("Image Files (*.bmp *.jpeg *.jpg *.png)"));
+    if (!saveFileName.isEmpty()) {
+        outputPixmap.save(saveFileName);
     }
 }
