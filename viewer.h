@@ -21,6 +21,8 @@ private slots:
 
 private:
     Ui::Viewer *ui;
+    QString fileName;
+    QPixmap outputPixmap;
 };
 
 #endif //OC_VIEWER_H
