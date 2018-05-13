@@ -3,6 +3,6 @@
 
 #include <cv.hpp>
 
-IplImage *processFile(const char* fileName);
+IplImage *getCenter(const char* fileName);
 
 #endif //OC_PROCESSOR_H
