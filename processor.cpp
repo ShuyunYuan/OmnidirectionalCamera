@@ -9,12 +9,12 @@
 using namespace std;
 using namespace cv;
 
-Mat getCenter(const char *fileName) {
+Mat undistortPanorama(const char *fileName) {
 
-    Mat image;
-    image = imread(fileName);
+    Mat source;
+    source = imread(fileName);
     Mat greyscale;
-    cvtColor(image, greyscale, CV_BGR2GRAY);
+    cvtColor(source, greyscale, CV_BGR2GRAY);
     Mat binary;
     threshold(greyscale, binary, 70, 255, CV_THRESH_BINARY);
 
@@ -29,15 +29,15 @@ Mat getCenter(const char *fileName) {
     float radius;
     minEnclosingCircle(maxContour, center, radius);
 
-    Mat distorted(400, 1200, CV_8UC3);
-    Mat mapx_pan(distorted.rows, distorted.cols, CV_32FC1);
-    Mat mapy_pan(distorted.rows, distorted.cols, CV_32FC1);
-    float Rmax = radius;  // the maximum radius of the region you would like to undistort into a panorama
-    float Rmin = 120;   // the minimum radius of the region you would like to undistort into a panorama
-    create_panoramic_undistortion_LUT(mapx_pan, mapy_pan, Rmin, Rmax, center.x, center.y);//进行展开
-    remap(image, distorted, mapx_pan, mapy_pan, INTER_LINEAR);
+    Mat output(400, 1200, CV_8UC3);
+    Mat mapX(output.rows, output.cols, CV_32FC1);
+    Mat mapY(output.rows, output.cols, CV_32FC1);
+    float rMin = 120;   // the minimum radius of the region you would like to undistort into a panorama
+    float rMax = radius;  // the maximum radius of the region you would like to undistort into a panorama
+    create_panoramic_undistortion_LUT(mapX, mapY, rMin, rMax, center.x, center.y);//进行展开
+    remap(source, output, mapX, mapY, INTER_LINEAR);
 
-    return distorted;
+    return output;
 }
 
 //IplImage *processFile(const char* fileName) {
