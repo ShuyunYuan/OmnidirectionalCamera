@@ -9,7 +9,7 @@
 using namespace std;
 using namespace cv;
 
-IplImage *getCenter(const char *fileName) {
+Mat getCenter(const char *fileName) {
 
     Mat image;
     image = imread(fileName);
@@ -29,21 +29,15 @@ IplImage *getCenter(const char *fileName) {
     float radius;
     minEnclosingCircle(maxContour, center, radius);
 
-    IplImage* src = new IplImage(image);
-    CvSize size_pan_image = cvSize(1200, 400);        // size of the undistorted panoramic video
-    IplImage *dst = cvCreateImage(size_pan_image, 8, 3);    // undistorted panoramic video
-
-    CvMat *mapx_pan = cvCreateMat(dst->height, dst->width, CV_32FC1);
-    CvMat *mapy_pan = cvCreateMat(dst->height, dst->width, CV_32FC1);
-
+    Mat distorted(400, 1200, CV_8UC3);
+    Mat mapx_pan(distorted.rows, distorted.cols, CV_32FC1);
+    Mat mapy_pan(distorted.rows, distorted.cols, CV_32FC1);
     float Rmax = radius;  // the maximum radius of the region you would like to undistort into a panorama
     float Rmin = 120;   // the minimum radius of the region you would like to undistort into a panorama
-
     create_panoramic_undistortion_LUT(mapx_pan, mapy_pan, Rmin, Rmax, center.x, center.y);//进行展开
+    remap(image, distorted, mapx_pan, mapy_pan, INTER_LINEAR);
 
-    cvRemap(src, dst, mapx_pan, mapy_pan);
-
-    return dst;
+    return distorted;
 }
 
 //IplImage *processFile(const char* fileName) {
