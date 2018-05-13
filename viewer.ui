@@ -56,6 +56,44 @@
        </widget>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="thresholdLayout" stretch="0,0">
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="thresholdLabel">
+          <property name="text">
+           <string>Threshold:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="thresholdSpinBox">
+          <property name="maximum">
+           <number>255</number>
+          </property>
+          <property name="value">
+           <number>70</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="thresholdLabelMaximum">
+          <property name="text">
+           <string> / 255</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="updateThresholdButton">
+          <property name="text">
+           <string>Update</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <widget class="QPushButton" name="saveButton">
         <property name="text">
          <string>Save</string>
