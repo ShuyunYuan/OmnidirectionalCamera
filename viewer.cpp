@@ -26,12 +26,10 @@ void Viewer::on_openButton_clicked() {
     QPixmap inputPixmap;
     inputPixmap.load(fileName);
     ui->inputImage->setPixmap(inputPixmap.scaled(600, 600, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    IplImage *iplImage = getCenter(fileName.toLocal8Bit().constData());
-    cv::Mat matrix = cv::cvarrToMat(iplImage);
+    cv::Mat matrix = getCenter(fileName.toLocal8Bit().constData());
     cv::cvtColor(matrix, matrix, matrix.type() == CV_8UC1 ? CV_GRAY2RGB : CV_BGR2RGB);
     outputPixmap = QPixmap::fromImage(QImage(matrix.data, matrix.cols, matrix.rows, matrix.cols * 3,
             QImage::Format_RGB888));
-    cvReleaseImage(&iplImage);
     ui->outputImage->setPixmap(outputPixmap.scaled(600, 600, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
