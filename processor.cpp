@@ -6,7 +6,7 @@
 using namespace std;
 using namespace cv;
 
-void makeUndistortPanoramicMaps(Mat mapX, Mat mapY, float rMin, float rMax, float centerX, float centerY) {
+static void makeUndistortPanoramicMaps(Mat mapX, Mat mapY, float rMin, float rMax, float centerX, float centerY) {
     int columns = mapX.cols;
     int rows = mapX.rows;
     for (int row = 0; row < rows; ++row) {
@@ -19,14 +19,14 @@ void makeUndistortPanoramicMaps(Mat mapX, Mat mapY, float rMin, float rMax, floa
     }
 }
 
-Mat undistortPanorama(const char *fileName) {
+Mat undistortPanorama(const char *fileName, double threshold) {
 
     Mat source;
     source = imread(fileName);
     Mat greyscale;
     cvtColor(source, greyscale, CV_BGR2GRAY);
     Mat binary;
-    threshold(greyscale, binary, 70, 255, CV_THRESH_BINARY);
+    cv::threshold(greyscale, binary, threshold, 255, CV_THRESH_BINARY);
 
     vector<vector<Point>> contours;
     findContours(binary, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);

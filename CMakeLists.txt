@@ -11,5 +11,6 @@ find_package(Qt5Widgets)
 
 set(SOURCE_FILES main.cpp processor.cpp viewer.cpp)
 add_executable(OmnidirectionalCamera ${SOURCE_FILES})
+target_include_directories(OmnidirectionalCamera PRIVATE OmnidirectionalCamera_autogen/include/)
 target_link_libraries(OmnidirectionalCamera ${OpenCV_LIBS})
 target_link_libraries(OmnidirectionalCamera Qt5::Widgets)
