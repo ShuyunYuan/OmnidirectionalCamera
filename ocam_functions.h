@@ -86,4 +86,4 @@ void create_perspecive_undistortion_LUT(CvMat *mapx, CvMat *mapy, struct ocam_mo
  The region to undistorted in contained between Rmin and Rmax
  xc, yc are the row and column coordinates of the image center
 ------------------------------------------------------------------------------*/
-void create_panoramic_undistortion_LUT(cv::Mat mapx, cv::Mat mapy, float rMin, float rMax, float centerX, float centerY);
+void create_panoramic_undistortion_LUT(cv::Mat mapX, cv::Mat mapY, float rMin, float rMax, float centerX, float centerY);
