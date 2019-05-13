@@ -1,7 +1,7 @@
 #ifndef OC_PROCESSOR_H
 #define OC_PROCESSOR_H
 
-#include <cv.hpp>
+#include <opencv2/opencv.hpp>
 
 cv::Mat undistortPanorama(const char *fileName, double threshold);
 
