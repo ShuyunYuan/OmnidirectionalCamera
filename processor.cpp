@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <algorithm>
 
-#include <cv.hpp>
+#include <opencv2/opencv.hpp>
 
 using namespace std;
 using namespace cv;
@@ -24,12 +24,12 @@ Mat undistortPanorama(const char *fileName, double threshold) {
     Mat source;
     source = imread(fileName);
     Mat greyscale;
-    cvtColor(source, greyscale, CV_BGR2GRAY);
+    cvtColor(source, greyscale, COLOR_BGR2GRAY);
     Mat binary;
-    cv::threshold(greyscale, binary, threshold, 255, CV_THRESH_BINARY);
+    cv::threshold(greyscale, binary, threshold, 255, THRESH_BINARY);
 
     vector<vector<Point>> contours;
-    findContours(binary, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+    findContours(binary, contours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
     vector<double> areas(contours.size());
     transform(contours.begin(), contours.end(), areas.begin(),
               [](const vector<Point> &contour) { return contourArea(contour); });
