@@ -42,7 +42,7 @@ Mat undistortPanorama(const char *fileName, double threshold) {
     Mat output(400, 1200, source.type());
     Mat mapX(output.rows, output.cols, CV_32FC1);
     Mat mapY(output.rows, output.cols, CV_32FC1);
-    float rMin = 380;   // the minimum radius of the region you would like to undistort into a panorama
+    float rMin = 120;   // the minimum radius of the region you would like to undistort into a panorama
     float rMax = radius;  // the maximum radius of the region you would like to undistort into a panorama
     makeUndistortPanoramicMaps(mapX, mapY, rMin, rMax, center.x, center.y);//进行展开
     remap(source, output, mapX, mapY, INTER_LINEAR);
