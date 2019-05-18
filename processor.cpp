@@ -19,10 +19,8 @@ static void makeUndistortPanoramicMaps(Mat mapX, Mat mapY, float rMin, float rMa
     }
 }
 
-Mat undistortPanorama(const char *fileName, double threshold) {
+Mat undistortPanorama(const Mat &source, double threshold) {
 
-    Mat source;
-    source = imread(fileName);
     Mat greyscale;
     cvtColor(source, greyscale, COLOR_BGR2GRAY);
     Mat binary;
