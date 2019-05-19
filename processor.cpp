@@ -1,5 +1,3 @@
-#define USE_CUDA
-
 #include <cstdio>
 #include <algorithm>
 
