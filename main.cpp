@@ -46,7 +46,8 @@ int main(int argc, char *argv[]) {
     auto end = high_resolution_clock::now();
     long duration = duration_cast<milliseconds>(end - start).count();
     if (benchmark) {
-        cout << "Times: " << times << ", Total: " << duration << "ms, Mean: " << duration / times << "ms" << endl;
+        cout << "Times: " << times << ", Total: " << duration << "ms, Mean: " << (double) duration / times << "ms"
+                << endl;
     }
 
     string outputFileName = fileName;
