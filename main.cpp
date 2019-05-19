@@ -44,10 +44,9 @@ int main(int argc, char *argv[]) {
         outputImage = undistortPanorama(inputImage);
     }
     auto end = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(end - start) / times;
+    long duration = duration_cast<milliseconds>(end - start).count();
     if (benchmark) {
-        cout << "Times: " << times << endl;
-        cout << "Mean: " << duration.count() << "ms" << endl;
+        cout << "Times: " << times << ", Total: " << duration << "ms, Mean: " << duration / times << "ms" << endl;
     }
 
     string outputFileName = fileName;
