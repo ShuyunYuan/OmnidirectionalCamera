@@ -1,7 +1,13 @@
+#define USE_CUDA
+
 #include <cstdio>
 #include <algorithm>
 
 #include <opencv2/opencv.hpp>
+
+#ifdef USE_CUDA
+#include <opencv2/cudawarping.hpp>
+#endif
 
 using namespace std;
 using namespace cv;
@@ -19,31 +25,30 @@ static void makeUndistortPanoramicMaps(Mat mapX, Mat mapY, float rMin, float rMa
     }
 }
 
-Mat undistortPanorama(const Mat &source, double threshold) {
+Mat undistortPanorama(const Mat &input) {
 
-    Mat greyscale;
-    cvtColor(source, greyscale, COLOR_BGR2GRAY);
-    Mat binary;
-    cv::threshold(greyscale, binary, threshold, 255, THRESH_BINARY);
+    int outputRows = 400;
+    int outputCols = 1200;
+    Mat mapX(outputRows, outputCols, CV_32FC1);
+    Mat mapY(outputRows, outputCols, CV_32FC1);
+    // The minimum radius of the region to undistort into a panorama
+    float rMin = 120;
+    // The maximum radius of the region to undistort into a panorama
+    float rMax = 400;
+    makeUndistortPanoramicMaps(mapX, mapY, rMin, rMax, input.cols / 2.0f, input.rows / 2.0f);
 
-    vector<vector<Point>> contours;
-    findContours(binary, contours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
-    vector<double> areas(contours.size());
-    transform(contours.begin(), contours.end(), areas.begin(),
-              [](const vector<Point> &contour) { return contourArea(contour); });
-    size_t maxIndex = static_cast<size_t>(max_element(areas.begin(), areas.end()) - areas.begin());
-    const vector<Point> &maxContour = contours[maxIndex];
-    Point2f center;
-    float radius;
-    minEnclosingCircle(maxContour, center, radius);
-
-    Mat output(400, 1200, source.type());
-    Mat mapX(output.rows, output.cols, CV_32FC1);
-    Mat mapY(output.rows, output.cols, CV_32FC1);
-    float rMin = 120;   // the minimum radius of the region you would like to undistort into a panorama
-    float rMax = radius;  // the maximum radius of the region you would like to undistort into a panorama
-    makeUndistortPanoramicMaps(mapX, mapY, rMin, rMax, center.x, center.y);//进行展开
-    remap(source, output, mapX, mapY, INTER_LINEAR);
+#ifdef USE_CUDA
+    cuda::GpuMat gpuInput(input);
+    cuda::GpuMat gpuOutput(outputRows, outputCols, input.type());
+    cuda::GpuMat gpuMapX(mapX);
+    cuda::GpuMat gpuMapY(mapY);
+    cuda::remap(gpuInput, gpuOutput, gpuMapX, gpuMapY, INTER_LINEAR);
+    Mat output;
+    gpuOutput.download(output);
+#else
+    Mat output(outputRows, outputCols, input.type());
+    remap(input, output, mapX, mapY, INTER_LINEAR);
+#endif
 
     return output;
 }

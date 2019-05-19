@@ -3,6 +3,6 @@
 
 #include <opencv2/opencv.hpp>
 
-cv::Mat undistortPanorama(const cv::Mat &fileName, double threshold);
+cv::Mat undistortPanorama(const cv::Mat &input);
 
 #endif //OC_PROCESSOR_H
