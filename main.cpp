@@ -39,15 +39,16 @@ int main(int argc, char *argv[]) {
 
     Mat inputImage = imread(fileName);
     Mat outputImage;
-    auto start = high_resolution_clock::now();
+    high_resolution_clock::duration totalDuration;
     for (size_t i = 0; i < times; ++i) {
-        outputImage = undistortPanorama(inputImage);
+        high_resolution_clock::duration duration;
+        outputImage = undistortPanorama(inputImage, duration);
+        totalDuration += duration;
     }
-    auto end = high_resolution_clock::now();
-    long duration = duration_cast<milliseconds>(end - start).count();
+    long totalDurationMillis = duration_cast<milliseconds>(totalDuration).count();
     if (benchmark) {
-        cout << "Times: " << times << ", Total: " << duration << "ms, Mean: " << (double) duration / times << "ms"
-                << endl;
+        cout << "Times: " << times << ", Total: " << totalDurationMillis << "ms, Mean: "
+                << (double) totalDurationMillis / times << "ms" << endl;
     }
 
     string outputFileName = fileName;

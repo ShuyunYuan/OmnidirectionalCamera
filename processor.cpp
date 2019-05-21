@@ -8,6 +8,7 @@
 #endif
 
 using namespace std;
+using namespace std::chrono;
 using namespace cv;
 
 static void makeUndistortPanoramicMaps(Mat mapX, Mat mapY, float rMin, float rMax, float centerX, float centerY) {
@@ -23,7 +24,7 @@ static void makeUndistortPanoramicMaps(Mat mapX, Mat mapY, float rMin, float rMa
     }
 }
 
-Mat undistortPanorama(const Mat &input) {
+Mat undistortPanorama(const Mat &input, high_resolution_clock::duration &duration) {
 
     int outputRows = 400;
     int outputCols = 1200;
@@ -40,13 +41,18 @@ Mat undistortPanorama(const Mat &input) {
     cuda::GpuMat gpuOutput(outputRows, outputCols, input.type());
     cuda::GpuMat gpuMapX(mapX);
     cuda::GpuMat gpuMapY(mapY);
+    high_resolution_clock::time_point start = high_resolution_clock::now();
     cuda::remap(gpuInput, gpuOutput, gpuMapX, gpuMapY, INTER_LINEAR);
+    high_resolution_clock::time_point end = high_resolution_clock::now();
     Mat output;
     gpuOutput.download(output);
 #else
     Mat output(outputRows, outputCols, input.type());
+    high_resolution_clock::time_point start = high_resolution_clock::now();
     remap(input, output, mapX, mapY, INTER_LINEAR);
+    high_resolution_clock::time_point end = high_resolution_clock::now();
 #endif
 
+    duration = end - start;
     return output;
 }
